@@ -1,1 +1,140 @@
-newman: command not found
+newman
+
+Lab05 Registration API
+
+❏ T1 Happy path: идэвхтэй оюутан, урьдач хангасан → OK
+↳ setup оюутан
+  PUT http://localhost:3000/students/T1_S [200 OK, 178B, 27ms]
+
+↳ setup хичээл
+  PUT http://localhost:3000/courses/T1_C [200 OK, 178B, 2ms]
+
+↳ T1 Happy path: идэвхтэй оюутан, урьдач хангасан → OK
+  POST http://localhost:3000/registrations [201 Created, 202B, 2ms]
+  ✓  Статус 201
+  ✓  result = OK
+  ✓  registrationID нь тоо
+
+❏ T2 Оюутан байхгүй үед ERROR_NO_STUDENT
+↳ setup хичээл
+  PUT http://localhost:3000/courses/T2_C [200 OK, 178B, 2ms]
+
+↳ T2 Оюутан байхгүй үед ERROR_NO_STUDENT
+  POST http://localhost:3000/registrations [200 OK, 192B, 2ms]
+  ✓  Статус 200
+  ✓  result = ERROR_NO_STUDENT
+
+❏ T3 Идэвхгүй оюутан бүртгүүлэхэд ERROR_INACTIVE_STUDENT
+↳ setup оюутан
+  PUT http://localhost:3000/students/T3_S [200 OK, 178B, 1ms]
+
+↳ setup хичээл
+  PUT http://localhost:3000/courses/T3_C [200 OK, 178B, 2ms]
+
+↳ T3 Идэвхгүй оюутан бүртгүүлэхэд ERROR_INACTIVE_STUDENT
+  POST http://localhost:3000/registrations [200 OK, 198B, 2ms]
+  ✓  Статус 200
+  ✓  result = ERROR_INACTIVE_STUDENT
+
+❏ T4 Хичээл байхгүй үед ERROR_NO_COURSE
+↳ setup оюутан
+  PUT http://localhost:3000/students/T4_S [200 OK, 178B, 2ms]
+
+↳ T4 Хичээл байхгүй үед ERROR_NO_COURSE
+  POST http://localhost:3000/registrations [200 OK, 191B, 2ms]
+  ✓  Статус 200
+  ✓  result = ERROR_NO_COURSE
+
+❏ T5 Урьдач нөхцөл огт үзээгүй үед ERROR_PREREQUISITES
+↳ setup оюутан
+  PUT http://localhost:3000/students/T5_S [200 OK, 178B, 1ms]
+
+↳ setup хичээл
+  PUT http://localhost:3000/courses/T5_C [200 OK, 178B, 1ms]
+
+↳ T5 Урьдач нөхцөл огт үзээгүй үед ERROR_PREREQUISITES
+  POST http://localhost:3000/registrations [200 OK, 215B, 1ms]
+  ✓  Статус 200
+  ✓  result = ERROR_PREREQUISITES
+  ✓  missing = [CS201]
+
+❏ T6 Урьдач зарим нь дутуу үед missing зөвхөн дутууг жагсаана
+↳ setup оюутан
+  PUT http://localhost:3000/students/T6_S [200 OK, 178B, 1ms]
+
+↳ setup хичээл
+  PUT http://localhost:3000/courses/T6_C [200 OK, 178B, 1ms]
+
+↳ T6 Урьдач зарим нь дутуу үед missing зөвхөн дутууг жагсаана
+  POST http://localhost:3000/registrations [200 OK, 215B, 2ms]
+  ✓  Статус 200
+  ✓  result = ERROR_PREREQUISITES
+  ✓  missing = [CS202]
+
+❏ T7 Давхар алдаа: оюутан ба хичээл хоёулаа байхгүй → ERROR_NO_STUDENT түрүүлнэ
+↳ T7 Давхар алдаа: оюутан ба хичээл хоёулаа байхгүй → ERROR_NO_STUDENT түрүүлнэ
+  POST http://localhost:3000/registrations [200 OK, 192B, 1ms]
+  ✓  Статус 200
+  ✓  result = ERROR_NO_STUDENT
+
+❏ T8 Давхар алдаа: идэвхгүй оюутан + урьдач дутуу → ERROR_INACTIVE_STUDENT түрүүлнэ
+↳ setup оюутан
+  PUT http://localhost:3000/students/T8_S [200 OK, 178B, 2ms]
+
+↳ setup хичээл
+  PUT http://localhost:3000/courses/T8_C [200 OK, 178B, 1ms]
+
+↳ T8 Давхар алдаа: идэвхгүй оюутан + урьдач дутуу → ERROR_INACTIVE_STUDENT түрүүлнэ
+  POST http://localhost:3000/registrations [200 OK, 198B, 1ms]
+  ✓  Статус 200
+  ✓  result = ERROR_INACTIVE_STUDENT
+
+❏ T9 Хязгаар: урьдач нөхцөлгүй хичээл + хоосон coursesTaken → OK
+↳ setup оюутан
+  PUT http://localhost:3000/students/T9_S [200 OK, 178B, 1ms]
+
+↳ setup хичээл
+  PUT http://localhost:3000/courses/T9_C [200 OK, 178B, 1ms]
+
+↳ T9 Хязгаар: урьдач нөхцөлгүй хичээл + хоосон coursesTaken → OK
+  POST http://localhost:3000/registrations [201 Created, 202B, 2ms]
+  ✓  Статус 201
+  ✓  result = OK
+
+❏ T10 Хязгаар: courseID талбар дутуу → 400 ERROR_BAD_REQUEST
+↳ T10 Хязгаар: courseID талбар дутуу → 400 ERROR_BAD_REQUEST
+  POST http://localhost:3000/registrations [400 Bad Request, 202B, 1ms]
+  ✓  Статус 400
+  ✓  result = ERROR_BAD_REQUEST
+
+❏ T11 Хязгаар: studentID талбар дутуу → 400 ERROR_BAD_REQUEST
+↳ T11 Хязгаар: studentID талбар дутуу → 400 ERROR_BAD_REQUEST
+  POST http://localhost:3000/registrations [400 Bad Request, 202B, 2ms]
+  ✓  Статус 400
+  ✓  result = ERROR_BAD_REQUEST
+
+❏ T12 Хязгаар: буруу JSON → 400 ERROR_BAD_JSON
+↳ T12 Хязгаар: буруу JSON → 400 ERROR_BAD_JSON
+  POST http://localhost:3000/registrations [400 Bad Request, 199B, 1ms]
+  ✓  Статус 400
+  ✓  result = ERROR_BAD_JSON
+
+┌─────────────────────────┬─────────────────┬─────────────────┐
+│                         │        executed │          failed │
+├─────────────────────────┼─────────────────┼─────────────────┤
+│              iterations │               1 │               0 │
+├─────────────────────────┼─────────────────┼─────────────────┤
+│                requests │              26 │               0 │
+├─────────────────────────┼─────────────────┼─────────────────┤
+│            test-scripts │              12 │               0 │
+├─────────────────────────┼─────────────────┼─────────────────┤
+│      prerequest-scripts │               0 │               0 │
+├─────────────────────────┼─────────────────┼─────────────────┤
+│              assertions │              27 │               0 │
+├─────────────────────────┴─────────────────┴─────────────────┤
+│ total run duration: 333ms                                   │
+├─────────────────────────────────────────────────────────────┤
+│ total data received: 625B (approx)                          │
+├─────────────────────────────────────────────────────────────┤
+│ average response time: 2ms [min: 1ms, max: 27ms, s.d.: 4ms] │
+└─────────────────────────────────────────────────────────────┘
